@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Wifi Analyzer</string>
+    <string name="save_btn_value">Save Result</string>
+    <string name="wifiSSID">SSID</string>
+    <string name="signalStr">RSSI</string>
+    <string name="wifiConnInfo">Currently connected to:</string>
+    <string name="frequency">Freq</string>
+    <string name="macAddr">MAC</string>
+    <string name="currWifiInfoBtnName">Current Connection Info</string>
+    <string name="tableHeading">WiFi list:</string>
+    <string name="signalHeader">RSSI,Level</string>
+</resources>
