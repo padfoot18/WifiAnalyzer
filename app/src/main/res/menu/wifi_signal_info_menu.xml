@@ -6,4 +6,8 @@
         android:id="@+id/saveToFile"
         android:title="@string/save_btn_value"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/refesh"
+        android:title="@string/refresh"
+        app:showAsAction="ifRoom" />
 </menu>

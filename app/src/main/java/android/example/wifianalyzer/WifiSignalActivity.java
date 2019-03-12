@@ -10,6 +10,8 @@ import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.mbms.StreamingService;
+import android.text.format.Formatter;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
@@ -57,7 +59,11 @@ public class WifiSignalActivity extends AppCompatActivity {
         int freq = wifiInfo.getFrequency();
         String linkSpeedUnits = WifiInfo.LINK_SPEED_UNITS;
         int linkSpeed = wifiInfo.getLinkSpeed();
-        String data = "\nSSID: "+ssid+"\nLink Speed: "+linkSpeed+" "+linkSpeedUnits;
+        int ip = wifiInfo.getIpAddress();
+        String ipString = String.format("%d.%d.%d.%d", (ip & 0xff), (ip >> 8 & 0xff), (ip >> 16 & 0xff), (ip >> 24 & 0xff));
+
+        String data = "\nSSID: "+ssid+"\nLink Speed: "+linkSpeed+" "+linkSpeedUnits
+                +"\nFrequency: "+freq+"\nMAC Address: "+mac+"\nIP Address: "+ipString;
         wifiConnDetails.append(data);
     }
 
@@ -68,7 +74,7 @@ public class WifiSignalActivity extends AppCompatActivity {
             int level = WifiManager.calculateSignalLevel(rssi, 100);
             level++;
             wifiSignalInfo.append("\n"+rssi+","+level);
-            handler.postDelayed(this, 5000);
+            handler.postDelayed(this, 2000);
         }
     };
 
@@ -112,6 +118,8 @@ public class WifiSignalActivity extends AppCompatActivity {
             Thread file_write = new Thread(saveDataToFile);
             file_write.start();
             return true;
+        } else if(id == R.id.refesh) {
+            wifiSignalInfo.setText("RSSI,Level");
         }
 
         return super.onOptionsItemSelected(item);
@@ -127,19 +135,25 @@ public class WifiSignalActivity extends AppCompatActivity {
     }
 
     public void writeToFile(String file_name) {
-        String path = Environment.DIRECTORY_DOCUMENTS;
         File dir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOCUMENTS), "WiFiAnalyzer");
+        String root_path = dir.getPath();
         if(!dir.mkdirs())
-            Log.d("File", "File not created");
-        Log.d("File_path", path+"/"+file_name);
+            Log.d("File", "Dir not created");
 
         try {
             File myFile = new File(dir, file_name);
+            final String file_path = root_path + "/" + myFile.getName();
             PrintWriter pw = new PrintWriter(myFile);
             String data = wifiSignalInfo.getText().toString();
             pw.println(data);
             pw.close();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getApplicationContext(), "File saved at "+file_path, Toast.LENGTH_LONG).show();
+                }
+            });
         } catch (FileNotFoundException e) {
             Log.d("Error", e.toString());
         }
