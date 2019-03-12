@@ -71,7 +71,7 @@ public class NearbyWifiActivity extends AppCompatActivity {
 
         for (ScanResult result: results) {
             i = 0;
-//            Log.d("Scan_Result", result.toString());
+            Log.d("Scan_Result", result.toString());
             String ssid = result.SSID;
             int level = result.level;
             int freq = result.frequency;
