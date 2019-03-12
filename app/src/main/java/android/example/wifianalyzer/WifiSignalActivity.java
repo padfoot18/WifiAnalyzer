@@ -2,6 +2,9 @@ package android.example.wifianalyzer;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -31,10 +34,11 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class WifiSignalActivity extends AppCompatActivity {
-    private Handler handler;
+    private Handler handler = null;
     private WifiManager wifiManager;
     private TextView wifiSignalInfo;
     private TextView wifiConnDetails;
+    private boolean isConnected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,11 +49,29 @@ public class WifiSignalActivity extends AppCompatActivity {
         wifiSignalInfo = findViewById(R.id.wifi_info);
         wifiConnDetails = findViewById(R.id.wifiConnDetails);
         wifiSignalInfo.setMovementMethod(new ScrollingMovementMethod());
-        getWifiInfo();
+        checkConnected();
 
-        handler = new Handler();
-        handler.post(wifiSignalBgTask);
+        if(isConnected) {
+            getWifiInfo();
+            handler = new Handler();
+            handler.post(wifiSignalBgTask);
+        }
+        else
+            Toast.makeText(getApplicationContext(), "Not connected to any wifi Network", Toast.LENGTH_LONG).show();
     }
+
+    public void checkConnected() {
+        ConnectivityManager connectionManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectionManager.getActiveNetworkInfo();
+
+        if ( networkInfo != null && networkInfo.isConnectedOrConnecting()){
+            isConnected = true;
+        }else{
+            isConnected = false;
+        }
+    }
+
+
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void getWifiInfo() {
@@ -119,7 +141,23 @@ public class WifiSignalActivity extends AppCompatActivity {
             file_write.start();
             return true;
         } else if(id == R.id.refesh) {
+            checkConnected();
             wifiSignalInfo.setText("RSSI,Level");
+            wifiConnDetails.setText(R.string.wifiConnInfo);
+            if(isConnected) {
+                getWifiInfo();
+                if(handler == null){
+                    handler = new Handler();
+                    handler.post(wifiSignalBgTask);
+                }
+            }
+            else {
+                Toast.makeText(getApplicationContext(), "Not connected to any wifi Network", Toast.LENGTH_LONG).show();
+                if (handler != null) {
+                    stopWifiSignalTask();
+                    handler = null;
+                }
+            }
         }
 
         return super.onOptionsItemSelected(item);
@@ -155,7 +193,7 @@ public class WifiSignalActivity extends AppCompatActivity {
                 }
             });
         } catch (FileNotFoundException e) {
-            Log.d("Error", e.toString());
+            Log.d("Error-FileNotFound", e.toString());
         }
     }
 }
