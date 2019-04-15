@@ -13,10 +13,7 @@ import android.widget.Button;
 
 
 public class MainActivity extends AppCompatActivity {
-    private static final int MY_PERMISSIONS_ACCESS_WIFI_STATE = 1;
-    private static final int MY_PERMISSIONS_CHANGE_WIFI_STATE = 2;
-    private static final int MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE = 3;
-    private static final int MY_PERMISSIONS_ACCESS_NETWORK_STATE = 4;
+    private static final int MY_PERMISSIONS_REQUIRED_PERMISSIONS = 666;
     private Button wifiSignalBtn;
     private Button nearbyWifiBtn;
 
@@ -48,32 +45,16 @@ public class MainActivity extends AppCompatActivity {
 
     public void getPermissions() {
         if(ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_WIFI_STATE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_WIFI_STATE},
-                    MY_PERMISSIONS_ACCESS_WIFI_STATE);
-        }
-        if(ContextCompat.checkSelfPermission(this,
-                Manifest.permission.CHANGE_WIFI_STATE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CHANGE_WIFI_STATE},
-                    MY_PERMISSIONS_CHANGE_WIFI_STATE);
-        }
-        if(ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED
+        || ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE);
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.ACCESS_COARSE_LOCATION},
+                    MY_PERMISSIONS_REQUIRED_PERMISSIONS);
         }
-        if(ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_NETWORK_STATE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_NETWORK_STATE},
-                    MY_PERMISSIONS_ACCESS_NETWORK_STATE);
-        }
+
     }
 }
